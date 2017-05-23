@@ -7,10 +7,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.neo.ssm.bean.Employee;
+import com.neo.ssm.bean.Msg;
 import com.neo.ssm.service.EmployeeService;
 
 /**
@@ -25,11 +27,29 @@ public class EmployeeController {
 
 	@Autowired
 	EmployeeService employeeService;
+	
+	/**
+	 * 改造后的ajax方法
+	 * @param pageNumber
+	 * @param model
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping("/emps")
+	public Msg getEmpsWithJson(@RequestParam(value="pageNumber" ,defaultValue="1") Integer pageNumber,Model model){
+		//引入分页插件pageHelp,页码，每页数量
+				PageHelper.startPage(pageNumber, 5);
+				List<Employee> emps = employeeService.getAll();
+				//使用pageinfo封装查询信息，将pageInfo交给页面就可以了,连续查询5页
+				PageInfo page = new PageInfo(emps,5);
+				return Msg.success().and("pageInfo", page);
+	}
+	
 	/**
 	 * 分页查询员工
 	 * @return
 	 */
-	@RequestMapping("/emps")
+	/*@RequestMapping("/emps")
 	public String getEmps(@RequestParam(value="pageNumber" ,defaultValue="1") Integer pageNumber,Model model){
 		//引入分页插件pageHelp,页码，每页数量
 		PageHelper.startPage(pageNumber, 5);
@@ -38,6 +58,6 @@ public class EmployeeController {
 		PageInfo page = new PageInfo(emps,5);
 		model.addAttribute("pageInfo", page);
 		return "list";
-	}
+	}*/
 	
 }

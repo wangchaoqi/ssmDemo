@@ -19,4 +19,5 @@ public interface DepartmentMapper {
     int updateByExampleSelective(@Param("record") Department record, @Param("example") DepartmentExample example);
 
     int updateByExample(@Param("record") Department record, @Param("example") DepartmentExample example);
+
 }

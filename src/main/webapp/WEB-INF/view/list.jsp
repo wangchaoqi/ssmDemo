@@ -41,8 +41,8 @@
 					<tr>
 						<th>ID</th>
 						<th>NAME</th>
-						<th>MAIL</th>
 						<th>SEX</th>
+						<th>MAIL</th>
 						<th>DEPT</th>
 						<th>
 							<button class="btn btn-primary">编辑</button>
@@ -82,6 +82,9 @@
 					<li><a href="${APP_PATH }/emps?pageNumber=1" aria-label="Previous"> <span
 							aria-hidden="true">首页</span>
 					</a></li>
+					<li><a href="${APP_PATH }/emps?pageNumber=${pageInfo.pageNum -1}" aria-label="Previous"> <span
+							aria-hidden="true">&laquo;</span>
+					</a></li>
 					</c:if>
 					<c:forEach items="${pageInfo.navigatepageNums }" var="page_Nums">
 						<c:if test="${pageInfo.pageNum == page_Nums}">
@@ -97,6 +100,9 @@
 					</a></li>
 					</c:if>
 					<c:if test="${pageInfo.pageNum != pageInfo.pages}">
+					<li><a href="${APP_PATH }/emps?pageNumber=${pageInfo.pageNum +1}" aria-label="Next"> <span
+							aria-hidden="true">&raquo;</span>
+					</a></li>
 					<li><a href="${APP_PATH }/emps?pageNumber=${pageInfo.pages}" aria-label="Next"> <span
 							aria-hidden="true">末页</span>
 					</a></li>
