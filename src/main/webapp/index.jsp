@@ -59,7 +59,11 @@
 			<div class="col-md-6" id="page_nav"></div>
 		</div>
 	</div>
+<div id="alert">
 
+</div>
+
+	
 	<!-- Modal 员工添加弹出框-->
 	<div class="modal fade" id="empModal" tabindex="-1" role="dialog"
 		aria-labelledby="myModalLabel">
@@ -70,23 +74,23 @@
 						aria-label="Close">
 						<span aria-hidden="true">&times;</span>
 					</button>
-					<h4 class="modal-title" id="myModalLabel">Modal title</h4>
+					<h4 class="modal-title" id="myModalLabel">新增员工</h4>
 				</div>
 				<div class="modal-body">
 					<form class="form-horizontal">
 						<div class="form-group">
 							<label class="col-sm-2 control-label">NAME</label>
 							<div class="col-sm-10">
-								<input type="text" name="empNmae" class="form-control" id="enm_name">
+								<input type="text" name="empName" class="form-control" id="emp_name">
 							</div>
 						</div>
 						<div class="form-group">
 							<label class="col-sm-2 control-label">SEX</label>
 							<div class="col-sm-10">
 								<label class="radio-inline"> <input type="radio"
-									name="empSex" id="is_M" value="M" checked="checked"> 男
+									name="empSex" id="is_M" value="m" checked="checked"> 男
 								</label> <label class="radio-inline"> <input type="radio"
-									name="empSex" id="is_W" value="W"> 女
+									name="empSex" id="is_W" value="w"> 女
 								</label>
 							</div>
 						</div>
@@ -122,12 +126,16 @@
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-					<button type="button" class="btn btn-primary">添加</button>
+					<button type="button" id="add_emp" class="btn btn-primary">添加</button>
 				</div>
 			</div>
 		</div>
 	</div>
 	<script type="text/javascript">
+	
+	//总记录数
+		var totalPage ;
+		var currentPage;
 		$(function(){
 			//去首页
 			toPage(1);
@@ -144,11 +152,11 @@
 				var empSex = $("<td></td>").append(item.empSex = 'm'?"男":"女");
 				var email = $("<td></td>").append(item.email);
 				var deptName = $("<td></td>").append(item.department.deptName);
-				var editButton = $("<button></button>").addClass("btn btn-primary btn-sm")
-				.append("<span></span>").addClass("glyphicon glyphicon-pencal").append("编辑");
-				
-				var deleteButton= $("<button></button>").addClass("btn btn-danger btn-sm")
-				.append("<span></span>").addClass("glyphicon glyphicon-trash").append("删除");
+				var editButton = $("<button></button>").addClass("btn btn-primary btn-sm edit-emp")
+				.append("<span></span>").addClass("glyphicon glyphicon-pencal").append("编辑").attr("id",item.empId);
+				editButton
+				var deleteButton= $("<button></button>").addClass("btn btn-danger btn-sm delete-emp")
+				.append("<span></span>").addClass("glyphicon glyphicon-trash").append("删除").attr("id",item.empId);
 				
 				var btn = $("<td></td>").append(editButton).append(" ").append(deleteButton);
 				//append执行完成后会返回原来的元素"$("<tr></tr>")"
@@ -230,6 +238,8 @@
 				data:"pageNumber="+pn,
 				type:"GET",
 				success:function(result){
+					totalPage = result.extend.pageInfo.total;
+					currentPage = result.extend.pageInfo.pageNum;
 					console.log(result);
 					//构建表格
 					buildEmpTable(result);
@@ -251,6 +261,7 @@
 			})
 		})
 		
+		//下拉列表查询部门名称
 		function getDeptNameToSelect(){
 			
 			$.ajax({
@@ -268,6 +279,44 @@
 				}
 			})
 		}
+		
+		$("#add_emp").click(function(){
+			//1.将摸态框中的表单数据提交
+			//alert($("#empModal form").serialize());
+			$.ajax({
+				url:"${APP_PATH}/emp",
+				type:"POST",
+				data:$("#empModal form").serialize(),
+				success:function(data){
+					if(data.extend.result == "ok"){
+						//插入成功，关闭摸态框
+						$("#empModal").modal("hide");
+						//来到最后一页
+						toPage(totalPage);
+						//<div class="alert alert-success" role="alert">...</div>
+						alert("保存成功");
+					}
+				}
+			})
+		})
+		
+		//单个删除
+		$(document).on("click",".delete-emp",function(){
+			var empId = $(this).attr("id");
+			//var empId = $(this).parents("tr").find("td:eq(0)").text();
+			var empName = $(this).parents("tr").find("td:eq(1)").text();
+			if(confirm("确认删除"+empName+"吗？")){
+				$.ajax({
+					url:"${APP_PATH}/deleteemp/"+empId,
+					type:"DELETE",
+					success:function(data){
+						alert("删除成功");
+						//返回首页
+						toPage(currentPage);
+					}
+				})
+			}
+		})
 	</script>
 </body>
 </html>
