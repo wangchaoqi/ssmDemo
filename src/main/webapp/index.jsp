@@ -78,7 +78,7 @@
 				</div>
 				<div class="modal-body">
 					<form class="form-horizontal">
-						<div class="form-group">
+						<div class="form-group" id="fader_name">
 							<label class="col-sm-2 control-label">NAME</label>
 							<div class="col-sm-10">
 								<input type="text" name="empName" class="form-control" id="emp_name">
@@ -94,7 +94,7 @@
 								</label>
 							</div>
 						</div>
-						<div class="form-group">
+						<div class="form-group" id="fader_email">
 							<label for="inputEmail3" class="col-sm-2 control-label">EMAIL</label>
 							<div class="col-sm-10">
 								<input type="email" name="email" class="form-control" id="emp_email"
@@ -254,6 +254,8 @@
 		//弹出框
 		$("#addNewEmp").click(function(){
 			//开启弹出框时查询部门名称，显示在下拉列表中
+			//重置表单
+			$("#empModal form")[0].reset();
 			getDeptNameToSelect();
 			
 			$("#empModal").modal({
@@ -283,21 +285,32 @@
 		$("#add_emp").click(function(){
 			//1.将摸态框中的表单数据提交
 			//alert($("#empModal form").serialize());
-			$.ajax({
-				url:"${APP_PATH}/emp",
-				type:"POST",
-				data:$("#empModal form").serialize(),
-				success:function(data){
-					if(data.extend.result == "ok"){
-						//插入成功，关闭摸态框
-						$("#empModal").modal("hide");
-						//来到最后一页
-						toPage(totalPage);
-						//<div class="alert alert-success" role="alert">...</div>
-						alert("保存成功");
+			
+			if(checked()){
+				$.ajax({
+					url:"${APP_PATH}/emp",
+					type:"POST",
+					data:$("#empModal form").serialize(),
+					success:function(data){
+						if(data.code == 100){
+							//插入成功，关闭摸态框
+							$("#empModal").modal("hide");
+							//来到最后一页
+							toPage(totalPage);
+							//<div class="alert alert-success" role="alert">...</div>
+							alert("保存成功");
+						}else{
+							if(undefined != data.extend.result.email){
+								alert(data.extend.result.email);
+							}
+							if(undefined != data.extend.result.empName){
+								alert(data.extend.result.empName);
+							}
+						}
 					}
-				}
-			})
+				})
+			}
+			
 		})
 		
 		//单个删除
@@ -317,6 +330,61 @@
 				})
 			}
 		})
+		
+		//查询empNmae是否重复
+		$(document).on("blur","#emp_name",function(){
+			var empName = $("#emp_name").val();
+			//英文数字6-16位或者中文2-5位
+			var regName = /(^[a-z0-9_-]{6,16}$)|(^[\u2e80-\u9fff]{2,5})/;
+			if(!regName.test(empName)){
+				$("#fader_name").addClass("has-error");
+				alert("用户名不正确！");
+				return false;
+			}else{
+				$("#fader_name").removeClass("has-error");
+				$("#fader_name").addClass("has-success");
+			};
+			
+			$.ajax({
+				url:"${APP_PATH}/checkname/"+empName,
+				type:"GET",
+				success:function(data){
+					console.log(data);
+					 if(data.extend.result == false){
+						$("#fader_name").addClass("has-error");
+					}else{
+						$("#fader_name").removeClass("has-error");
+						$("#fader_name").addClass("has-success");
+					} 
+				}
+			})
+			
+		})
+		
+		function checked(){
+			var empName = $("#emp_name").val();
+			//英文数字6-16位或者中文2-5位
+			var regName = /(^[a-z0-9_-]{6,16}$)|(^[\u2e80-\u9fff]{2,5})/;
+			if(!regName.test(empName)){
+				$("#fader_name").addClass("has-error");
+				alert("用户名不正确！");
+				return false;
+			}else{
+				$("#fader_name").addClass("has-success");
+			};
+			var email = $("#emp_email").val();
+			var regEmail = /^([a-z0-9_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6})$/;
+			if(!regEmail.test(email)){
+				$("#fader_email").addClass("has-error");
+				//alert("email格式不正确！")；
+				return false;
+			}else{
+				$("#fader_email").addClass("has-success");
+			}
+			return true;
+		}
+		
+		
 	</script>
 </body>
 </html>

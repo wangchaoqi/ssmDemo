@@ -7,7 +7,13 @@ import org.springframework.stereotype.Service;
 
 
 
+
+
+
+
 import com.neo.ssm.bean.Employee;
+import com.neo.ssm.bean.EmployeeExample;
+import com.neo.ssm.bean.EmployeeExample.Criteria;
 import com.neo.ssm.dao.EmployeeMapper;
 
 @Service
@@ -42,6 +48,20 @@ public class EmployeeService {
 	public void deleteEmpById(Integer id) {
 		// TODO Auto-generated method stub
 		employeeMapper.deleteByPrimaryKey(id);
+	}
+
+	/**
+	 * 
+	 * @param empName
+	 * @return true 用户名重复
+	 */
+	public boolean checkEmpName(String empName) {
+		// TODO Auto-generated method stub
+		EmployeeExample example = new EmployeeExample();
+		Criteria criteria = example.createCriteria();
+		criteria.andEmpNameEqualTo(empName);
+		long count = employeeMapper.countByExample(example);
+		return count == 0;
 	}
 
 	

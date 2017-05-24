@@ -1,12 +1,16 @@
 package com.neo.ssm.bean;
 
+import javax.validation.constraints.Pattern;
+
 public class Employee {
     private Integer empId;
 
     private String empSex;
 
+    @Pattern(regexp="(^[a-z0-9_-]{6,16}$)|(^[\u2e80-\u9fff]{2,5})",message="用户名错误")
     private String empName;
 
+    @Pattern(regexp="^([a-z0-9_\\.-]+)@([\\da-z\\.-]+)\\.([a-z\\.]{2,6})$",message="邮箱错误")
     private String email;
 
     private Integer dId;

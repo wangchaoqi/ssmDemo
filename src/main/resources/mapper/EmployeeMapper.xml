@@ -108,6 +108,9 @@
     LEFT JOIN dept d on e.d_id = d.dept_id
     where emp_id = #{empId,jdbcType=INTEGER}
   </select>
+  <select id="selectByName" parameterType="com.neo.ssm.bean.Employee" resultMap="BaseResultMap">
+  select * from emp where emp_name = #{empName}
+  </select>
   <!-- 查询员工不带部门 -->
   <select id="selectByExample" parameterType="com.neo.ssm.bean.EmployeeExample" resultMap="BaseResultMap">
     select

@@ -2,7 +2,9 @@ package com.neo.ssm.dao;
 
 import com.neo.ssm.bean.Employee;
 import com.neo.ssm.bean.EmployeeExample;
+
 import java.util.List;
+
 import org.apache.ibatis.annotations.Param;
 
 public interface EmployeeMapper {
@@ -20,6 +22,8 @@ public interface EmployeeMapper {
 
     Employee selectByPrimaryKey(Integer empId);
     
+    Employee selectByName(String empName);
+    
     List<Employee> selectByExampleWithDept(EmployeeExample example);
 
     Employee selectByPrimaryKeyWithDept(Integer empId);
@@ -31,4 +35,5 @@ public interface EmployeeMapper {
     int updateByPrimaryKeySelective(Employee record);
 
     int updateByPrimaryKey(Employee record);
+
 }

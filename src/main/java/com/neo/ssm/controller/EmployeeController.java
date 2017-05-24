@@ -1,10 +1,16 @@
 package com.neo.ssm.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -14,6 +20,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.neo.ssm.bean.Employee;
+import com.neo.ssm.bean.EmployeeExample;
 import com.neo.ssm.bean.Msg;
 import com.neo.ssm.dao.EmployeeMapper;
 import com.neo.ssm.service.EmployeeService;
@@ -33,6 +40,7 @@ public class EmployeeController {
 	
 	/**
 	 * 改造后的ajax方法
+	 * 查询所有员工
 	 * @param pageNumber
 	 * @param model
 	 * @return
@@ -54,18 +62,42 @@ public class EmployeeController {
 	 */
 	@ResponseBody
 	@RequestMapping(value="/emp",method=RequestMethod.POST)
-	public Msg saveEmps(Employee employee){
-		employeeService.saveEmps(employee);
+	public Msg saveEmps(@Valid Employee employee, BindingResult result){
+		Map<String, Object> map = new HashMap<String, Object>();
+		
+		if(result.hasErrors()){
+			List<FieldError> value = result.getFieldErrors();
+			for (FieldError fieldError : value) {
+				map.put(fieldError.getField(), fieldError.getDefaultMessage());
+			}
+			return Msg.fail().and("result", map);
+		}else{
+			employeeService.saveEmps(employee);
+			return Msg.success().and("result", "ok");
+		}
+		
+	}
+	
+	/**
+	 * 根据ID删除员工
+	 * @param id
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value="/deleteemp/{id}",method=RequestMethod.DELETE)
+	public Msg deleteEmpById(@PathVariable("id")Integer id){
+		employeeService.deleteEmpById(id);
 		return Msg.success().and("result", "ok");
 	}
 	
 	@ResponseBody
-	@RequestMapping(value="/deleteemp/{id}",method=RequestMethod.DELETE)
-	public Msg deleteEmpById(@PathVariable("id")Integer id){
-		System.out.println("1231231313");
-		employeeService.deleteEmpById(id);
-		return Msg.success().and("result", "ok");
-		}
+	@RequestMapping(value="/checkname/{empName}",method=RequestMethod.GET)
+	public Msg getEmpName(@PathVariable("empName")String empName){
+		
+		boolean has = employeeService.checkEmpName(empName);
+		
+		return Msg.success().and("result", has);
+	}
 	/**
 	 * 分页查询员工
 	 * @return
