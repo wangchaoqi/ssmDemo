@@ -12,9 +12,9 @@
   	<!-- 数据库链接信息 -->
     <jdbcConnection 
     	driverClass="com.mysql.jdbc.Driver"
-        connectionURL="jdbc:mysql://localhost:3306/test"
+        connectionURL="jdbc:mysql://localhost:3306/boottest"
         userId="root"
-        password="root">
+        password="Passw0rd">
     </jdbcConnection>
 
     <javaTypeResolver >
@@ -47,5 +47,6 @@
 	<!-- table指定每个表的生成策略 -->
   	<table tableName="emp" domainObjectName="Employee"></table>
 	<table tableName="dept" domainObjectName="Department"></table>
+	<table tableName="user" domainObjectName="User"></table>
   </context>
 </generatorConfiguration>
